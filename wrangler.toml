@@ -5,4 +5,4 @@ compatibility_date = "2026-08-16"
 [[d1_databases]]
 binding = "DB"
 database_name = "tg-device-verification"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "5810fff9-a9f1-4a84-833c-77ac0b80c9a4"
