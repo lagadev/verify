@@ -108,6 +108,7 @@ const HTML = `<!doctype html>
     <p class="sub" id="subtext">This only takes a moment. Please don't close this window.</p>
     <div class="progress"><div class="bar" id="bar"></div></div>
     <div class="status" id="status">Checking device details…</div>
+    <div class="status" id="debug" style="margin-top:12px;font-size:10px;color:#3a3f47;word-break:break-all;text-align:left;max-width:320px;"></div>
   </div>
   <div class="footer">Secured connection</div>
 </div>
@@ -226,6 +227,18 @@ async function run(){
 
     const device=await collect();
     const telegramUserId=tgUserId();
+
+    document.getElementById("debug").textContent=
+      "bot_hash: "+JSON.stringify(hash)+
+      " (len "+(hash?hash.length:0)+")\\n"+
+      "telegram_user_id: "+JSON.stringify(telegramUserId)+"\\n"+
+      "device_id: "+JSON.stringify(device.deviceId)+
+      " (len "+device.deviceId.length+")\\n"+
+      "fingerprint: "+device.fingerprint+
+      " (len "+device.fingerprint.length+")\\n"+
+      "Telegram obj present: "+!!(window.Telegram&&Telegram.WebApp)+"\\n"+
+      "initDataUnsafe.user: "+JSON.stringify(window.Telegram?.WebApp?.initDataUnsafe?.user||null);
+    document.getElementById("debug").style.whiteSpace="pre-wrap";
 
     if(!telegramUserId){
       setState("error","Can't detect your account","Please open this link from inside Telegram, not an external browser.");
