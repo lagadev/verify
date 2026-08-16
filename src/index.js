@@ -3,37 +3,112 @@ const HTML = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#17232e">
-<title>Verification Organization</title>
+<meta name="theme-color" content="#0b0d10">
+<title>Verify</title>
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden}
-body{background:#17232e;color:#fff;font-family:Arial,Helvetica,sans-serif}
-.app{width:100%;height:100%;max-width:560px;margin:auto;display:flex;flex-direction:column}
-.top{height:64px;display:flex;align-items:center;padding:0 16px;background:#1d2a36;border-bottom:1px solid #202d38}
-.close{font-size:38px;font-weight:200;margin-right:28px}.title{font-size:22px;flex:1}
-.chev{font-size:30px;margin-right:22px}.menu{font-size:29px}
-.main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;margin-top:-20px}
-.device{width:238px;height:238px;border:6px solid #56a9ec;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:55px}
-.phone{width:78px;height:112px;border:8px solid #56a9ec;border-radius:14px;position:relative}
-.dot{width:11px;height:11px;background:#56a9ec;border-radius:50%;position:absolute;left:50%;bottom:10px;transform:translateX(-50%)}
-h1{font-size:38px;margin:0 0 54px;font-weight:700;text-align:center}
-.progress{width:82%;height:14px;background:#283846;border-radius:20px;overflow:hidden}
-.bar{width:0;height:100%;background:#5ab0f2;border-radius:20px}
-.status{font-size:24px;color:#8796a5;margin-top:18px;text-align:center;min-height:30px}
-.bottom{height:48px;background:#14202a}
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden}
+  body{
+    background:#0b0d10;
+    color:#f4f5f7;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;height:100%;max-width:480px;margin:auto;
+    display:flex;flex-direction:column;
+  }
+  .main{
+    flex:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:32px;
+  }
+  .ring{
+    width:96px;height:96px;
+    border-radius:50%;
+    border:2px solid #23262b;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:40px;
+    position:relative;
+  }
+  .ring::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:50%;
+    border:2px solid transparent;
+    border-top-color:#5b8cff;
+    animation:spin 1s linear infinite;
+  }
+  .ring.done::before{ animation:none; border-color:transparent; }
+  .ring.done{ border-color:#3ddc84; }
+  .ring.fail{ border-color:#ff5c5c; }
+  .icon{ width:28px;height:28px; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  h1{
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 8px;
+    text-align:center;
+    letter-spacing:-0.01em;
+  }
+  p.sub{
+    font-size:14px;
+    color:#8a8f98;
+    margin:0 0 36px;
+    text-align:center;
+    max-width:320px;
+    line-height:1.5;
+  }
+  .progress{
+    width:100%;
+    max-width:220px;
+    height:3px;
+    background:#1c1f24;
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .bar{
+    width:0;
+    height:100%;
+    background:#5b8cff;
+    border-radius:4px;
+    transition:width .1s linear;
+  }
+  .bar.done{ background:#3ddc84; }
+  .bar.fail{ background:#ff5c5c; }
+  .status{
+    font-size:13px;
+    color:#5f6570;
+    margin-top:16px;
+    text-align:center;
+    min-height:18px;
+    letter-spacing:.01em;
+  }
+  .footer{
+    padding:20px;
+    text-align:center;
+    font-size:11px;
+    color:#4a4f58;
+  }
 </style>
 </head>
 <body>
 <div class="app">
-<div class="top"><div class="close">×</div><div class="title">Verification Organization</div><div class="chev">⌄</div><div class="menu">⋮</div></div>
-<div class="main">
-<div class="device"><div class="phone"><div class="dot"></div></div></div>
-<h1 id="heading">Device Verification</h1>
-<div class="progress"><div class="bar" id="bar"></div></div>
-<div class="status" id="status">Scanning your device...</div>
-</div>
-<div class="bottom"></div>
+  <div class="main">
+    <div class="ring" id="ring">
+      <svg class="icon" id="icon" viewBox="0 0 24 24" fill="none" stroke="#5b8cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2"></rect>
+        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+      </svg>
+    </div>
+    <h1 id="heading">Verifying your device</h1>
+    <p class="sub" id="subtext">This only takes a moment. Please don't close this window.</p>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="status" id="status">Checking device details…</div>
+  </div>
+  <div class="footer">Secured connection</div>
 </div>
 
 <script>
@@ -42,6 +117,25 @@ const hash=qs.get("bot_hash");
 const bar=document.getElementById("bar");
 const statusEl=document.getElementById("status");
 const heading=document.getElementById("heading");
+const subtext=document.getElementById("subtext");
+const ring=document.getElementById("ring");
+const icon=document.getElementById("icon");
+
+function setState(kind,title,message){
+  heading.textContent=title;
+  subtext.textContent=message;
+  if(kind==="success"){
+    ring.classList.add("done");
+    bar.classList.add("done");
+    icon.innerHTML='<polyline points="20 6 9 17 4 12"></polyline>';
+    icon.setAttribute("stroke","#3ddc84");
+  }else if(kind==="error"){
+    ring.classList.add("fail");
+    bar.classList.add("fail");
+    icon.innerHTML='<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+    icon.setAttribute("stroke","#ff5c5c");
+  }
+}
 
 function localDeviceId(){
   const key="tg_device_id_v1";
@@ -124,7 +218,8 @@ async function run(){
     if(window.Telegram&&Telegram.WebApp) Telegram.WebApp.ready();
 
     if(!hash){
-      statusEl.textContent="Invalid verification session";
+      setState("error","Invalid session","Please reopen verification from the bot.");
+      statusEl.textContent="Missing or invalid link";
       return;
     }
 
@@ -146,16 +241,21 @@ async function run(){
     const result=await response.json();
 
     if(result.status==="success"){
-      statusEl.textContent="Verification Successful";
+      setState("success","You're verified","Your device has been confirmed successfully.");
+      statusEl.textContent="Verification complete";
     }else if(result.status==="info"){
-      statusEl.textContent="Already Verified";
+      setState("success","Already verified","This device was already confirmed.");
+      statusEl.textContent="No further action needed";
     }else if(result.status==="error" && result.code==="MULTI_DEVICE"){
-      statusEl.textContent="Multi Device Detected";
+      setState("error","Multiple devices detected","This account is already linked to another device.");
+      statusEl.textContent="Verification blocked";
     }else{
-      statusEl.textContent=result.message||"Verification Failed";
+      setState("error","Verification failed",result.message||"Something went wrong. Please try again.");
+      statusEl.textContent="Please try again";
     }
   }catch(e){
-    statusEl.textContent="Verification Failed";
+    setState("error","Verification failed","Something went wrong. Please try again.");
+    statusEl.textContent="Please try again";
   }
 
   const started=Date.now();
