@@ -93,6 +93,7 @@ const HTML = `<!doctype html>
     color:#4a4f58;
   }
 </style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 <div class="app">
@@ -226,6 +227,12 @@ async function run(){
     const device=await collect();
     const telegramUserId=tgUserId();
 
+    if(!telegramUserId){
+      setState("error","Can't detect your account","Please open this link from inside Telegram, not an external browser.");
+      statusEl.textContent="Missing Telegram account info";
+      return;
+    }
+
     const response=await fetch("/api/verify",{
       method:"POST",
       headers:{"content-type":"application/json"},
@@ -307,7 +314,7 @@ export default {
         headers:{
           "content-type":"text/html;charset=UTF-8",
           "cache-control":"no-store",
-          "content-security-policy":"default-src 'self'; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'"
+          "content-security-policy":"default-src 'self'; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline' https://telegram.org"
         }
       });
     }
